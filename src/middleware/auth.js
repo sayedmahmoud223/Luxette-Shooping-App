@@ -4,6 +4,7 @@ import userModel from "../../DB/model/User.js";
 
 
 const auth = async (req, res, next) => {
+
     try {
         const { authorization } = req.headers;
        
