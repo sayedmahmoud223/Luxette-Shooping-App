@@ -1,11 +1,12 @@
 import mongoose, { Schema, Types, model } from "mongoose";
 
 const categorySchema = new Schema({
-    name:{type:String ,trim:true , required:true, min :2 , max:150 },
-    slug:{type:String , required:true },
+    name:{type:String , required:true },
+    // slug:{type:String , required:true },
     image:{type:Object , required:true},
-    createdBy:{type:Types.ObjectId ,ref:'User' ,required:true},
-    updatedBy:{type:Types.ObjectId ,ref:'User' , required:true},
+    createdBy:{type:Types.ObjectId ,ref:'User' ,required:false},
+    updatedBy:{type:Types.ObjectId ,ref:'User' , required:false},
+    customId: { type: String },
     isDeleted:{type:Boolean , default:false}
 },{
     timestamps:true

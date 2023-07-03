@@ -22,7 +22,7 @@ export let addProduct = async (req, res, next) => {
             console.log(err);
         }
     })
-    56
+  
     req.body.mainImage = { public_id, secure_url };
     req.body.subImages = [];
     if (req.files?.subImages?.length) {
