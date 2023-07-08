@@ -4,9 +4,70 @@ import cloudinary from "../../../utils/cloudinary.js"
 import { nanoid } from "nanoid";
 import { productModel } from "../../../../DB/model/Product.model.js";
 import slugify from "slugify";
+import { paginate } from "../../../utils/Paginate.js";
+import { ApiFeature } from "../../../utils/ApiFeatures.js";
 
 
 
+export const  getAllProduct = async (req,res,next)=>{
+
+    const mongooseQuery = new ApiFeature(productModel.find({}),req.query).paginate().filter().search().select().sort()
+     const products = await mongooseQuery.mongooseQuery
+    
+    return res.status(200).json({message:"Done" , products})
+
+    // let {limit,skip}=  paginate(req.query.page,req.query.size)
+
+    // let filterQuery={...req.query}
+    // console.log(filterQuery);
+    // let  dataInUrlNotNeeded= ['page','size','sort','search','fields','limit']
+    // dataInUrlNotNeeded.forEach((key)=>{
+    //     if(filterQuery[key])
+    //     {
+    //          delete filterQuery[key]
+    //     }
+    // })
+    // console.log(filterQuery);
+
+    // filterQuery = JSON.parse( JSON.stringify(filterQuery).replace(/(gt|gte|lte|lt|eq|in|nin)/g , match=>`$${match}` ))
+    // console.log(filterQuery);
+   
+
+    // const mongooseQuery = productModel.find(filterQuery).limit(limit).skip(skip)
+    // if(req.query.sort )
+    // {
+    //     mongooseQuery.sort(req.query.sort.replaceAll("," ," "))
+    // }
+    // if(req.query.search )
+    // {
+    //     mongooseQuery.find({
+    //         $or:[
+    //             {
+    //                 ProductName:{$regex:req.query.search , $options:"i"}
+    //             },
+    //             {
+    //                 description:{$regex:req.query.search , $options:"i"}
+    //             },
+    //             {
+    //                 productType:{$regex:req.query.search , $options:"i"}
+    //             },
+    //             {
+    //                 size:{$regex:req.query.search , $options:"i"}
+    //             },
+    //             {
+    //                 productSeasonType:{$regex:req.query.search , $options:"i"}
+    //             }
+    //         ]
+    //     })
+    // }
+    // if(req.query.fields)
+    // {
+    //     mongooseQuery.select(req.query.fields.replaceAll("," ," "))
+    // }
+    // const products = await mongooseQuery
+    // console.log(req.query.sort);
+    // return res.status(200).json({message:"Done" , products})
+}
 
 
 export let addProduct = async (req, res, next) => {
