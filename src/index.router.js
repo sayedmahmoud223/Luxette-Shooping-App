@@ -4,19 +4,35 @@ import cartRouter from './modules/cart/cart.router.js'
 import categoryRouter from './modules/category/category.router.js'
 import couponRouter from './modules/coupon/coupon.router.js'
 import orderRouter from './modules/order/order.router.js'
+import offerRouter from './modules/offer/offer.router.js'
+import { productSchema } from './modules/product/graphQl/graphQlSchema.js'
 import productRouter from './modules/product/product.router.js'
 import reviewsRouter from './modules/reviews/reviews.router.js'
 import userRouter from './modules/user/user.router.js'
-
-
+import { graphqlHTTP } from "express-graphql"
+import rateLimit from "express-rate-limit"
 
 const initApp = (app, express) => {
     //convert Buffer Data
     app.use(express.json({}))
+    //rate Limit
+    let rateLimiting = rateLimit({
+        windowMs: 30 * 60 * 1000,
+        max: 50,
+        message: "too much requests",
+        
+    })
+    app.use(rateLimiting)
+    //graphQl Routing
+    app.use("/graphql", graphqlHTTP({
+        schema: productSchema,
+        graphiql: true
+    }))
     //Setup API Routing 
     app.use(`/auth`, authRouter)
     app.use(`/user`, userRouter)
     app.use(`/product`, productRouter)
+    app.use(`/offer`, offerRouter)
     app.use(`/category`, categoryRouter)
     app.use(`/reviews`, reviewsRouter)
     app.use(`/coupon`, couponRouter)

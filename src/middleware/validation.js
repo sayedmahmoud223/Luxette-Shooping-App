@@ -32,19 +32,13 @@ export const generalFields = {
 
 export const validation = (schema) => {
     return (req, res, next) => {
-        console.log({body:req.body});
-        const validationErr = []
-        dataMethods.forEach(key => {
-            if (schema[key]) {
-                const validationResult = schema[key].validate(req[key], { abortEarly: false })
-                if (validationResult.error) {
-                    validationErr.push(validationResult.error.details)
-                }
-            }
-        });
-
-        if (validationErr.length) {
-            return res.json({ message: "Validation Err", validationErr })
+        const inputs = { ...req.body, ...req.params, ...req.query }
+        if (req.file || req.files) {
+            inputs.file = req.file || req.files
+        }
+        const validationResult = schema.validate(inputs, { abortEarly: false })
+        if (validationResult.error) {
+            return res.status(409).json({ status: 'failed', errors: validationResult.error.details.map(err => err.message) })
         }
         return next()
     }

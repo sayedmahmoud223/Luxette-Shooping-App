@@ -12,6 +12,9 @@ const categorySchema = new Schema({
     timestamps:true
 })
 
+categorySchema.pre(['find', 'findOne', 'findOneAndDelete', 'findOneAndUpdate', 'updateOne'], function () {
+    this.where({ isDeleted: false })
+})
 
 const categoryModel = mongoose.model.Category || model("Category",categorySchema)
 

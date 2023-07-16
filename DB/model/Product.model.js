@@ -1,5 +1,5 @@
 import mongoose, { Schema, Types, model } from "mongoose"
-
+import { variantSchema } from "./Variants.model.js"
 let productSchema = new Schema({
     ProductName: {
         type: String,
@@ -15,23 +15,6 @@ let productSchema = new Schema({
         min: [2, 'minimum length 2 char']
     },
     slug: { type: String, required: false },
-    size: {
-        type: String,
-        required: [true, 'size is required'],
-        enum: ["sm", "lg", "xl"],
-        default:"sm"
-    },
-    stock: {
-        type: Number,
-        default: 0,
-        required: [true, "stock is required"],
-        validate: {
-            validator: function (value) {
-                return value >= 0;
-            },
-            message: 'The field must be a positive Number.'
-        }
-    },
     price: {
         type: Number,
         required: [true, 'price is required'],
@@ -56,19 +39,15 @@ let productSchema = new Schema({
             "Maxi dresses"
         ]
     },
-    // CategoryId: {
-    //     type: Types.ObjectId,
-    //     ref: "Category",
-    //     required: [true, "productCategory is required"]
-    // },
     mainImage: { type: Object, required: true },
-    subImages: { type: [Object] },
+    mainColor: { type: String },
+    variants: [Object],
     discount: { type: Number, default: 0 },
     finalPrice: { type: Number, required: true, default: 0 },
-    colors: {
-        type: [String],
-        required: true
-    },
+    // colors: {
+    //     type: [String],
+    //     required: true
+    // },
     // createdBy: { type: Types.ObjectId, ref: "User", required: true },
     // updatedBy: { type: Types.ObjectId, ref: "User" },
     // wishList: [{ type: Types.ObjectId, ref: "User" }],
@@ -76,9 +55,51 @@ let productSchema = new Schema({
     customId: { type: String, required: true },
 
 }, {
-    timestamps:true,
-    toJSON:{virtuals:true},
-    toObject:{virtuals:true}
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 })
+
+productSchema.pre(['find', 'findOne', 'findOneAndDelete', 'findOneAndUpdate', 'updateOne'], function () {
+    this.where({ isDeleted: false })
+})
+
+productSchema.virtual('stock').get(function () {
+    let totalStock = 0;
+    if (this.variants) {
+        this.variants.forEach(variant => {
+            if (variant.stock) {
+                totalStock += variant.stock;
+                console.log(variant.stock);
+            }
+        });
+    }
+    return totalStock;
+});
+
+productSchema.virtual("colors").get(function(){
+    let colors = []
+    if (this.variants) {
+        this.variants.forEach(variant => {
+            if (variant?.colorName? !colors.includes(variant.colorName): null) {
+                colors.push(variant.colorName);
+            }
+        });
+    }
+    return colors
+});
+
+productSchema.virtual("sizes").get(function(){
+    let sizes = []
+    if (this.variants) {
+        this.variants.forEach(variant => {
+            if (variant?.size? !sizes.includes(variant.size): null) {
+                sizes.push(variant.size);
+            }
+        });
+    }
+    return sizes
+})
+
 
 export let productModel = mongoose.model.Product || model("Product", productSchema) 

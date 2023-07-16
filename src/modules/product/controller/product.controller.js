@@ -4,34 +4,93 @@ import cloudinary from "../../../utils/cloudinary.js"
 import { nanoid } from "nanoid";
 import { productModel } from "../../../../DB/model/Product.model.js";
 import slugify from "slugify";
-
-
-
-
-
+// import sharp from "sharp"
+import fs from "fs"
+import { getColorInfo } from "../../../utils/canvas.js";
+import { fileUpload } from "../../../utils/multer.js";
+import { varinatModel } from "../../../../DB/model/Variants.model.js";
 
 export let addProduct = async (req, res, next) => {
     let { ProductName, price } = req.body;
-    // if (!await categoryModel.findOne({_id: categoryId})){
-    //     return next(new ResError("Category not found", 404))
-    // }
+    console.log(price);
     req.body.slug = slugify(ProductName)
     req.body.finalPrice = Number.parseFloat(price - ((req.body.discount || 0) / 100) * price).toFixed(2);
     req.body.customId = nanoid(6)
+    console.log("hello");
+    console.log(req.files.mainImage[0]);
     let { public_id, secure_url } = await cloudinary.uploader.upload(req.files.mainImage[0].path, { folder: `luxxete/products/mainImage/${req.body.customId}` })
+    console.log("hello");
     req.body.mainImage = { public_id, secure_url };
-    req.body.subImages = [];
+
+
+    // for (const color of req.body.Colors) {
+    //     console.log(color);
+    // }
+
+
     if (req.files?.subImages?.length) {
         for (const image of req.files.subImages) {
             let { secure_url, public_id } = await cloudinary.uploader.upload(image.path, { folder: `luxxete/products/subImages/${req.body.customId}` })
             console.log("hello");
-            req.body.subImages.push({ secure_url, public_id })
+            req.body.Colors.subImages.push({ secure_url, public_id })
         }
     }
     let product = await productModel.create(req.body)
+
+
     return res.status(201).json({ message: "Success", product })
 }
 
+
+
+export let addProductVariants = async (req, res, next) => {
+    try {
+        let { id } = req.params
+        console.log(req.files);
+        let product = await productModel.findOne({ _id: id })
+        if (!product) {
+            return next(new ResError("Product not found", 404))
+        }
+        if (req.files?.subImages?.length) {
+            req.body.subImages = []
+            for (const image of req.files.subImages) {
+                let { secure_url, public_id } = await cloudinary.uploader.upload(image.path, { folder: `luxxete/products/subImages/${product.customId}/${req.body.colorName}` })
+                req.body.subImages.push({ secure_url, public_id })
+            }
+        }
+        let variant = await varinatModel.create(req.body)
+        product.variants.push(variant);
+        await product.save()
+        return res.status(200).json({ message: "Success", product })
+    } catch (error) {
+        return res.status(200).json({ message: error })
+    }
+}
+export let updateProductVariants = async (req, res, next) => {
+    let { id, variantId } = req.params
+    console.log(req.files);
+    let product = await productModel.findOne({ _id: id })
+    if (!product) {
+        return next(new ResError("Product not found", 404))
+    }
+
+    let variant = await varinatModel.findOne({ _id: variantId })
+    if (!variant) {
+        return next(new ResError("variant not found", 404))
+    }
+
+    if (req.files?.subImages?.length) {
+        req.body.subImages = []
+        for (const image of req.files.subImages) {
+            let { secure_url, public_id } = await cloudinary.uploader.upload(image.path, { folder: `luxxete/products/subImages/${product.customId}/${req.body.colorName}` })
+            await cloudinary.uploader.destroy(variant.subImages.map(ele => ele.public_id))
+            req.body.subImages.push({ secure_url, public_id })
+        }
+    }
+    await varinatModel.updateOne({_id: variantId}, req.body)
+    await product.save()
+    return res.status(200).json({ message: "Success" })
+}
 
 
 export let updateProduct = async (req, res, next) => {
@@ -44,9 +103,18 @@ export let updateProduct = async (req, res, next) => {
     }
     req.body.finalPrice = (price || discount) ? Number.parseFloat((price || product.price) - (((discount || product.discount) / 100) * (price || product.price))).toFixed(2) : product.finalPrice
     if (req.files.mainImage) {
-        let { public_id, secure_url } = await cloudinary.uploader.upload(req.files.mainImage[0].path, { folder: `luxxete/products/mainImage/${product.customId}` })
+        const mainImageProcess = await sharp(req.files.mainImage[0].buffer)
+            .resize(2000, 1333, {
+                fit: "contain"
+            })
+            .jpeg()
+            .toBuffer()
+        const tempFilePath = `temp_mainImage`;
+        fs.writeFileSync(tempFilePath, mainImageProcess);
+        let { public_id, secure_url } = await cloudinary.uploader.upload(tempFilePath, { folder: `luxxete/products/mainImage/${product.customId}` })
         await cloudinary.uploader.destroy(product.mainImage.public_id)
         req.files.mainImage = { public_id, secure_url }
+        fs.unlinkSync(tempFilePath)
         console.log(req.files.mainImage);
     }
     if (req.files?.subImages?.length) {
@@ -65,8 +133,17 @@ export let updateProduct = async (req, res, next) => {
         })
         req.body.subImages = []
         for (const image of req.files.subImages) {
-            let { public_id, secure_url } = await cloudinary.uploader.upload(image.path, { folder: `luxxete/products/subImages/${product.customId}` })
+            const subImagesProcess = await sharp(image.buffer)
+                .resize(1333, 1333, {
+                    fit: "contain"
+                })
+                .jpeg()
+                .toBuffer()
+            const tempFilePath2 = `temp_subImages`;
+            fs.writeFileSync(tempFilePath2, subImagesProcess);
+            let { public_id, secure_url } = await cloudinary.uploader.upload(tempFilePath2, { folder: `luxxete/products/subImages/${product.customId}` })
             req.body.subImages.push({ public_id, secure_url })
+            fs.unlinkSync(tempFilePath2)
         }
     }
     let updatedProduct = await productModel.updateOne({ _id: id }, req.body, { new: true })
