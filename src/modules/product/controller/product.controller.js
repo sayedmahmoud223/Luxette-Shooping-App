@@ -4,7 +4,7 @@ import cloudinary from "../../../utils/cloudinary.js"
 import { nanoid } from "nanoid";
 import { productModel } from "../../../../DB/model/Product.model.js";
 import slugify from "slugify";
-import { paginate } from "../../../utils/Paginate.js";
+
 import { ApiFeature } from "../../../utils/ApiFeatures.js";
 
 

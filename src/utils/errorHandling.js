@@ -6,6 +6,8 @@ export class ResError extends Error {
 }
 
 
+
+
 export let asyncHandler = (fn) => {
     return (req, res, next) => {
         fn(req, res, next).catch((err) => {
