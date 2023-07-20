@@ -4,12 +4,7 @@ import cloudinary from "../../../utils/cloudinary.js"
 import { nanoid } from "nanoid";
 import { productModel } from "../../../../DB/model/Product.model.js";
 import slugify from "slugify";
-// import sharp from "sharp"
-import fs from "fs"
-import { getColorInfo } from "../../../utils/canvas.js";
-import { fileUpload } from "../../../utils/multer.js";
 import { varinatModel } from "../../../../DB/model/Variants.model.js";
-
 
 import { ApiFeature } from "../../../utils/ApiFeatures.js";
 

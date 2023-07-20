@@ -7,7 +7,6 @@ import orderRouter from './modules/order/order.router.js'
 import offerRouter from './modules/offer/offer.router.js'
 import { productSchema } from './modules/product/graphQl/graphQlSchema.js'
 import productRouter from './modules/product/product.router.js'
-import reviewsRouter from './modules/reviews/reviews.router.js'
 import userRouter from './modules/user/user.router.js'
 import { graphqlHTTP } from "express-graphql"
 import rateLimit from "express-rate-limit"
@@ -35,7 +34,6 @@ const initApp = (app, express) => {
     app.use(`/product`, productRouter)
     app.use(`/offer`, offerRouter)
     app.use(`/category`, categoryRouter)
-    app.use(`/reviews`, reviewsRouter)
     app.use(`/coupon`, couponRouter)
     app.use(`/cart`, cartRouter)
     app.use(`/order`, orderRouter)
