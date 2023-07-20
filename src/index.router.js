@@ -11,9 +11,11 @@ import userRouter from './modules/user/user.router.js'
 import { graphqlHTTP } from "express-graphql"
 import rateLimit from "express-rate-limit"
 import { globalError } from './utils/errorHandling.js'
+import { webhook } from './modules/order/controller/order.controller.js'
 
 const initApp = (app, express) => {
     //convert Buffer Data
+    app.post('/webhook', express.raw({ type: 'application/json' }),webhook);
     app.use(express.json({}))
     //rate Limit
     let rateLimiting = rateLimit({

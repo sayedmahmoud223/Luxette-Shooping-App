@@ -56,7 +56,7 @@ export let sessionUrl = async (req, res, next) => {
     let cart = await cartModel.findOne({ _id: req.params.id }).populate("cartItems.productId")
     let copoun;
     if (copounName) {
-        let findcopoun = await copounModel.findOne({copounName})
+        let findcopoun = await copounModel.findOne({ copounName })
         if (!findcopoun) {
             return next(new ResError("copoun not found"))
         }
@@ -89,3 +89,20 @@ export let sessionUrl = async (req, res, next) => {
 
 
 
+export let webhook = async (req, res) => {
+    const sig = req.headers['stripe-signature'].toString();
+    let event;
+    try {
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.webhook_secret);
+    } catch (err) {
+        res.status(400).send(`Webhook Error: ${err.message}`);
+        return;
+    }
+    // Handle the event
+    if (event.type == 'checkout.session.completed') {
+        const checkoutSessionCompleted = event.data.object;
+        console.log("checkoutSessionCompleted");
+    } else {
+        console.log(`Unhandled event type ${event.type}`);
+    }
+}
