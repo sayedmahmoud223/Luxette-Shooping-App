@@ -80,7 +80,7 @@ export let sessionUrl = async (req, res, next) => {
         cancel_url: "https://www.youtube.com/results?search_query=paymob+integration+in+node+js",
         mode: "payment",
         customer_email: req.user.email,
-        metadata: { street, city, phone },
+        metadata: { street, city, phone, cartId: req.params.id },
         discounts: req.body.copounId ? [{ coupon: req.body.copounId }] : []
     })
     res.json({ session })
@@ -93,15 +93,15 @@ export let webhook = async (req, res) => {
     const sig = req.headers['stripe-signature'].toString();
     let event;
     try {
+        let stripe = new Stripe(process.env.Secret_key)
         event = stripe.webhooks.constructEvent(req.body, sig, process.env.webhook_secret);
     } catch (err) {
-        res.status(400).send(`Webhook Error: ${err.message}`);
-        return;
+        return res.status(400).send(`Webhook Error: ${err.message}`);
     }
     // Handle the event
     if (event.type == 'checkout.session.completed') {
         const checkoutSessionCompleted = event.data.object;
-        console.log("checkoutSessionCompleted");
+        console.log(checkoutSessionCompleted);
     } else {
         console.log(`Unhandled event type ${event.type}`);
     }
