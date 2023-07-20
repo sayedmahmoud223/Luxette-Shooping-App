@@ -2,12 +2,14 @@ import multer from "multer";
 export const fileValidation = () => {
     return (req, file, cb) => {
         if (
+
             (file.fieldname === "mainImage" && (file.mimetype === "image/png" || file.mimetype === "image/jpeg" || file.mimetype === "image/jpg")) ||
             (file.fieldname === "subImages" && (file.mimetype === "image/png" || file.mimetype === "image/jpeg" || file.mimetype === "image/jpg")) ||
             (file.fieldname === "image" && (file.mimetype === "image/png" || file.mimetype === "image/jpeg" || file.mimetype === "image/jpg"))
         ) {
             return cb(null, true);
         }
+
         else {
             return cb(new Error("In-Valid format", { cause: 400 }), false);
         }
@@ -21,6 +23,7 @@ export function fileUpload(size) {
     const upload = multer({ fileFilter, storage, limits });
     return upload;
 }
+// <<<<<<< HEAD
 
 //  import multer from "multer";
 
@@ -60,4 +63,30 @@ export function fileUpload(size) {
 //     const upload = multer({ fileFilter, storage });   // limits
 //     return upload;
 // }
+// =======
+
+// //----------------------------------------------------------------------------------------------- 
+
+
+//  export const  usualFileValidation ={
+//     image:["image/png" , "image/jpg" , "image/jpeg", "image/png" ],
+//     file:["application/pdf","application/msword"]
+// } 
+
+// export function usualFileUpload(customValidation = usualFileValidation.image ) { //size,
+//     const storage = multer.diskStorage({});
+//     // const limits = { fileSize: size * 1000 * 1000 };
+//     function fileFilter (req,file, cb){
+//         if(customValidation.includes(file.mimetype))
+//         {
+//             cb(null , true)
+//         }else
+//         {
+//             cb("invalid format ",false)
+//         }
+//     }
+//     const upload = multer({ fileFilter, storage });   // limits
+//     return upload;
+// }
+// >>>>>>> 5a0a5a3ab1d366e0200c2394c66abda75f16db50
 

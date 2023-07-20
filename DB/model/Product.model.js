@@ -41,7 +41,7 @@ let productSchema = new Schema({
     },
     mainImage: { type: Object, required: true },
     mainColor: { type: String },
-    variants: [Object],
+    variants: [{ type: Types.ObjectId, ref:"Variant"}],
     discount: { type: Number, default: 0 },
     finalPrice: { type: Number, required: true, default: 0 },
     // colors: {
@@ -62,6 +62,11 @@ let productSchema = new Schema({
 
 productSchema.pre(['find', 'findOne', 'findOneAndDelete', 'findOneAndUpdate', 'updateOne'], function () {
     this.where({ isDeleted: false })
+})
+
+productSchema.pre(['find', 'findOne', 'findOneAndDelete', 'findOneAndUpdate', 'updateOne'], function (next) {
+    this.populate("variants")
+    next()
 })
 
 productSchema.virtual('stock').get(function () {
@@ -102,4 +107,4 @@ productSchema.virtual("sizes").get(function(){
 })
 
 
-export let productModel = mongoose.model.Product || model("Product", productSchema) 
+export let productModel = model("Product", productSchema) ||  mongoose.model.Product

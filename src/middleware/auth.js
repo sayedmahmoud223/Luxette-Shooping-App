@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
-import userModel from "../../DB/model/User.js";
 import { ResError, asyncHandler } from "../utils/errorHandling.js"
-
+import userModel from "../../DB/model/User.model.js";
 
 
 const auth = (AccessRoles = []) => {

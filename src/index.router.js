@@ -11,6 +11,7 @@ import reviewsRouter from './modules/reviews/reviews.router.js'
 import userRouter from './modules/user/user.router.js'
 import { graphqlHTTP } from "express-graphql"
 import rateLimit from "express-rate-limit"
+import { globalError } from './utils/errorHandling.js'
 
 const initApp = (app, express) => {
     //convert Buffer Data
@@ -42,6 +43,7 @@ const initApp = (app, express) => {
     app.all('*', (req, res, next) => {
         res.send("In-valid Routing Plz check url  or  method")
     })
+    app.use(globalError)
     connectDB()
 
 }

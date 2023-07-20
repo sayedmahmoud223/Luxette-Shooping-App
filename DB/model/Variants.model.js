@@ -8,4 +8,4 @@ export let variantSchema = new Schema({
     stock: Number
 })
 
-export let varinatModel = mongoose.models.Variant || model("Variant", variantSchema) 
+export let varinatModel = model("Variant", variantSchema) || mongoose.models.Variant  

@@ -6,6 +6,8 @@ export class ResError extends Error {
 }
 
 
+
+
 export let asyncHandler = (fn) => {
     return (req, res, next) => {
         fn(req, res, next).catch((err) => {
@@ -17,11 +19,9 @@ export let asyncHandler = (fn) => {
 
 export let globalError = (err, req, res, next) => {
     if (err) {
-        let message = err.message
-        let statusCode = err.statusCode
-        if (process.env.MOOD == "dev") {
-            return res.status(err.statusCode).json({ message: message, stack: err.stack })
+        if (process.env.MOOD === "DEV") {
+            return res.status(err.statusCode || 500).json({ message: err.message, stack: err.stack })
         }
-        return res.status(statusCode).json({ message })
+        return res.status(err.statusCode).json({ message: err.message })
     }
 }
