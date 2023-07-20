@@ -92,16 +92,17 @@ export let sessionUrl = async (req, res, next) => {
 export let webhook = async (req, res) => {
     const sig = req.headers['stripe-signature'].toString();
     let event;
+    let stripe
     try {
-        let stripe = new Stripe(process.env.Secret_key)
-        event = stripe.webhooks.constructEvent(req.body, sig, process.env.webhook_secret);
+        stripe = new Stripe(process.env.Secret_key)
+        console.log(typeof (process.env.webhook_secret));
+        event = await stripe.webhooks.constructEvent(req.body, sig, process.env.webhook_secret);
     } catch (err) {
         return res.status(400).send(`Webhook Error: ${err.message}`);
     }
     // Handle the event
     if (event.type == 'checkout.session.completed') {
         const checkoutSessionCompleted = event.data.object;
-        console.log(checkoutSessionCompleted);
     } else {
         console.log(`Unhandled event type ${event.type}`);
     }
