@@ -98,13 +98,39 @@ export let webhook = async (req, res) => {
         return;
     }
     // Handle the event
+    const data = event.data.object
     if (event.type == "checkout.session.completed") {
+        req.body.street = data.metadata.street
+        req.body.city = data.metadata.city
+        req.body.phone = data.metadata.phone
+        let cart = await cartModel.findOne({ _id: data.metadata.cartId })
+        if (!cart) {
+            return next(new ResError("cart not found"))
+        }
+        !cart.cartItems.length && next(new ResError("cart is empty"))
+        await orderModel.create({
+            userId: req.user._id,
+            cartItems: cart.cartItems,
+            finalPrice: data.amount_total || cart.finalPrice,
+            orderPrice: finalPrice,
+            status: "placed",
+            address: req.body,
+            isPaid: true,
+            paymentMethod:"Payment"
+        })
+        let extractVariantIds = cart.cartItems.map((ele) => {
+            return ({
+                updateOne: {
+                    filter: { _id: ele?.variantId },
+                    update: { $inc: { stock: -(ele.quantity) } }
+                }
+            })
+        })
+        await varinatModel.bulkWrite(extractVariantIds)
+        cart.cartItems = []
+        cart.save()
         return res.status(200).json({ message: "Success" })
     } else {
         console.log(`Unhandled event type ${event.type}`);
     }
-    
-    // Return a 200 res to acknowledge receipt of the event
-    return res.status(200).json({ message: "Success" })
-
 }
