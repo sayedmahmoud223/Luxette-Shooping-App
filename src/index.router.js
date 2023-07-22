@@ -15,7 +15,7 @@ import { webhook } from './modules/order/controller/order.controller.js'
 
 const initApp = (app, express) => {
     //convert Buffer Data
-    app.post('/webhook', express.raw({ type: 'application/json' }), webhook);
+    app.post('/webhook', express.raw({ type: 'application/json' }), asyncHandler(webhook));
     app.use(express.json())
     //rate Limit
     let rateLimiting = rateLimit({
