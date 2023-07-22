@@ -10,28 +10,19 @@ import productRouter from './modules/product/product.router.js'
 import userRouter from './modules/user/user.router.js'
 import { graphqlHTTP } from "express-graphql"
 import rateLimit from "express-rate-limit"
-import { globalError } from './utils/errorHandling.js'
+import { asyncHandler, globalError } from './utils/errorHandling.js'
 import { webhook } from './modules/order/controller/order.controller.js'
 
 const initApp = (app, express) => {
     //convert Buffer Data
-    // app.post('/webhook', express.raw({ type: 'application/json' }),webhook);
-    // app.use(express.json({}))
-    app.use(express.json({
-        // Because Stripe needs the raw body, we compute it but only when hitting the Stripe callback URL.
-        verify: function (req, res, buf) {
-            var url = req.originalUrl;
-            if (url.endsWith('/webhook')) {
-                req.rawBody = buf.toString()
-            }
-        }
-    }));
+    app.post('/webhook', express.raw({ type: 'application/json' }), webhook);
+    app.use(express.json())
     //rate Limit
     let rateLimiting = rateLimit({
         windowMs: 30 * 60 * 1000,
         max: 50,
         message: "too much requests",
-        
+
     })
     app.use(rateLimiting)
     //graphQl Routing
