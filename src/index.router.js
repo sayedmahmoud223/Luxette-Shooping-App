@@ -18,13 +18,13 @@ const initApp = (app, express) => {
     app.post('/webhook', express.raw({ type: 'application/json' }), asyncHandler(webhook));
     app.use(express.json())
     //rate Limit
-    let rateLimiting = rateLimit({
-        windowMs: 30 * 60 * 1000,
-        max: 50,
-        message: "too much requests",
+    // let rateLimiting = rateLimit({
+    //     windowMs: 30 * 60 * 1000,
+    //     max: 50,
+    //     message: "too much requests",
 
-    })
-    app.use(rateLimiting)
+    // })
+    // app.use(rateLimiting)
     //graphQl Routing
     app.use("/graphql", graphqlHTTP({
         schema: productSchema,

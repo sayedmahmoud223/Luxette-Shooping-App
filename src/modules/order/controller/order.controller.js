@@ -49,7 +49,6 @@ export let createCashOrder = async (req, res, next) => {
     return res.status(200).json({ message: "Success" })
 }
 
-
 export let sessionUrl = async (req, res, next) => {
     let { street, city, phone, copounName } = req.body
     let stripe = new Stripe(process.env.Secret_key)
