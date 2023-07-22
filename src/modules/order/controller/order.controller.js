@@ -109,7 +109,7 @@ export let webhook = async (req, res) => {
         }
         !cart.cartItems.length && next(new ResError("cart is empty"))
         await orderModel.create({
-            userId: req.user._id,
+            userId: cart.userId,
             cartItems: cart.cartItems,
             finalPrice: data.amount_total || cart.finalPrice,
             orderPrice: finalPrice,
