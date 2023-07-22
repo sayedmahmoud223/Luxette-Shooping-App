@@ -86,25 +86,25 @@ export let sessionUrl = async (req, res, next) => {
     res.json({ session })
 }
 
-export let webhook = async (request, response) => {
-    const sig = request.headers['stripe-signature'].toString();
+export let webhook = async (req, res) => {
+    const sig = req.headers['stripe-signature'].toString();
 
     let event;
     let stripe = new Stripe(process.env.Secret_key)
     try {
-        event = stripe.webhooks.constructEvent(request.body, sig, process.env.webhook_secret);
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.webhook_secret);
     } catch (err) {
-        response.status(400).send(`Webhook Error: ${err.message}`);
+        res.status(400).send(`Webhook Error: ${err.message}`);
         return;
     }
     // Handle the event
     if (event.type == "checkout.session.completed") {
-        return response.status(200).json({ message: "Success" })
+        return res.status(200).json({ message: "Success" })
     } else {
         console.log(`Unhandled event type ${event.type}`);
     }
     
-    // Return a 200 response to acknowledge receipt of the event
-    return response.status(200).json({ message: "Success" })
+    // Return a 200 res to acknowledge receipt of the event
+    return res.status(200).json({ message: "Success" })
 
 }
