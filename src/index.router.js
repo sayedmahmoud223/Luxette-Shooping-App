@@ -9,7 +9,7 @@ import { productSchema } from './modules/product/graphQl/graphQlSchema.js'
 import productRouter from './modules/product/product.router.js'
 import userRouter from './modules/user/user.router.js'
 import { graphqlHTTP } from "express-graphql"
-import rateLimit from "express-rate-limit"
+// import rateLimit from "express-rate-limit"
 import { asyncHandler, globalError } from './utils/errorHandling.js'
 import { webhook } from './modules/order/controller/order.controller.js'
 
