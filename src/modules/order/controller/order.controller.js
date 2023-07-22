@@ -99,9 +99,6 @@ export let webhook = async (req, res) => {
     // Handle the event
     const data = event.data.object
     if (event.type == "checkout.session.completed") {
-        req.body.street = data.metadata.street
-        req.body.city = data.metadata.city
-        req.body.phone = data.metadata.phone
         let cart = await cartModel.findOne({ _id: data.metadata.cartId })
         if (!cart) {
             return next(new ResError("cart not found"))
@@ -113,9 +110,13 @@ export let webhook = async (req, res) => {
             finalPrice: data.amount_total || cart.finalPrice,
             orderPrice: data.amount_total || cart.finalPrice,
             status: "placed",
-            address: req.body,
+            address: {
+                street: data.metadata.street,
+                city:data.metadata.city,
+                phone:data.metadata.phone,
+            },
             isPaid: true,
-            paymentMethod:"Payment"
+            paymentMethod: "Payment"
         })
         let extractVariantIds = cart.cartItems.map((ele) => {
             return ({
