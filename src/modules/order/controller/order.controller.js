@@ -111,7 +111,7 @@ export let webhook = async (req, res) => {
             userId: cart.userId,
             cartItems: cart.cartItems,
             finalPrice: data.amount_total || cart.finalPrice,
-            orderPrice: finalPrice,
+            orderPrice: data.amount_total || cart.finalPrice,
             status: "placed",
             address: req.body,
             isPaid: true,
