@@ -20,34 +20,16 @@ let productSchema = new Schema({
         required: [true, 'price is required'],
         default: 0
     },
-    productSeasonType: {
-        type: String,
-        required: [true, 'productSeasonType is required'],
-        default: "SUMMER",
-        enum: ["WINTER", "FALL", "SUMMER", "SPRING"]
-    },
-    productType: {
-        type: String,
-        required: [true, 'productSeasonType is required'],
-        default: "Long sleeve",
-        enum: [
-            'Long sleeve',
-            '3/4 sleeve',
-            'Half sleeve',
-            'Short sleeve',
-            'Sleeveless',
-            "Maxi dresses"
-        ]
+    categoryId: {
+        type: Types.ObjectId,
+        ref:"Category",
+        required: true
     },
     mainImage: { type: Object, required: true },
     mainColor: { type: String },
-    variants: [{ type: Types.ObjectId, ref:"Variant"}],
+    variants: [{ type: Types.ObjectId, ref: "Variant" }],
     discount: { type: Number, default: 0 },
     finalPrice: { type: Number, required: true, default: 0 },
-    // colors: {
-    //     type: [String],
-    //     required: true
-    // },
     // createdBy: { type: Types.ObjectId, ref: "User", required: true },
     // updatedBy: { type: Types.ObjectId, ref: "User" },
     // wishList: [{ type: Types.ObjectId, ref: "User" }],
@@ -65,7 +47,14 @@ productSchema.pre(['find', 'findOne', 'findOneAndDelete', 'findOneAndUpdate', 'u
 })
 
 productSchema.pre(['find', 'findOne', 'findOneAndDelete', 'findOneAndUpdate', 'updateOne'], function (next) {
-    this.populate("variants")
+    this.populate([
+        {
+            path: "variants",
+        },
+        {
+            path: "categoryId",
+        }
+    ])
     next()
 })
 
@@ -82,11 +71,11 @@ productSchema.virtual('stock').get(function () {
     return totalStock;
 });
 
-productSchema.virtual("colors").get(function(){
+productSchema.virtual("colors").get(function () {
     let colors = []
     if (this.variants) {
         this.variants.forEach(variant => {
-            if (variant?.colorName? !colors.includes(variant.colorName): null) {
+            if (variant?.colorName ? !colors.includes(variant.colorName) : null) {
                 colors.push(variant.colorName);
             }
         });
@@ -94,11 +83,11 @@ productSchema.virtual("colors").get(function(){
     return colors
 });
 
-productSchema.virtual("sizes").get(function(){
+productSchema.virtual("sizes").get(function () {
     let sizes = []
     if (this.variants) {
         this.variants.forEach(variant => {
-            if (variant?.size? !sizes.includes(variant.size): null) {
+            if (variant?.size ? !sizes.includes(variant.size) : null) {
                 sizes.push(variant.size);
             }
         });
@@ -107,4 +96,4 @@ productSchema.virtual("sizes").get(function(){
 })
 
 
-export let productModel = model("Product", productSchema) ||  mongoose.model.Product
+export let productModel = model("Product", productSchema) || mongoose.model.Product

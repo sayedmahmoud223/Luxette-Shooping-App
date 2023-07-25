@@ -12,9 +12,10 @@ import { graphqlHTTP } from "express-graphql"
 // import rateLimit from "express-rate-limit"
 import { asyncHandler, globalError } from './utils/errorHandling.js'
 import { webhook } from './modules/order/controller/order.controller.js'
-
+import cors from "cors"
 const initApp = (app, express) => {
     //convert Buffer Data
+    app.use(cors())
     app.post('/webhook', express.raw({ type: 'application/json' }), asyncHandler(webhook));
     app.use(express.json())
     //rate Limit

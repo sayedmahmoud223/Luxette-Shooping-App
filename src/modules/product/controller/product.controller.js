@@ -14,11 +14,12 @@ export const getAllProduct = async (req, res, next) => {
 
     // const mongooseQuery = new ApiFeature(productModel.find({}), req.query).paginate().filter().search().select().sort()
     // const products = await mongooseQuery.mongooseQuery
-    let products = await productModel.find().populate([
-        {
-            path: "variants"
-        }
-    ])
+    let products = await productModel.find()
+    // .populate([
+    //     {
+    //         path: "variants"
+    //     }
+    // ])
     return res.status(200).json({ message: "Done", products })
 }
 
