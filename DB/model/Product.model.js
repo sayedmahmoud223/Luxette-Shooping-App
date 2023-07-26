@@ -20,7 +20,7 @@ let productSchema = new Schema({
         required: [true, 'price is required'],
         default: 0
     },
-    categoryId: {
+    category: {
         type: Types.ObjectId,
         ref:"Category",
         required: true
@@ -52,7 +52,7 @@ productSchema.pre(['find', 'findOne', 'findOneAndDelete', 'findOneAndUpdate', 'u
             path: "variants",
         },
         {
-            path: "categoryId",
+            path: "category",
         }
     ])
     next()
