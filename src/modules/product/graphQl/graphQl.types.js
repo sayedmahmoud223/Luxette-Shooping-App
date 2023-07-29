@@ -13,7 +13,7 @@ export let productType = new GraphQLObjectType({
     fields: {
         ProductName: { type: GraphQLString },
         description: { type: GraphQLString },
-        size: { type: new GraphQLList(GraphQLString) },
+        // size: { type: new GraphQLList(GraphQLString) },
         subImages: {
             type: new GraphQLList(new GraphQLObjectType({
                 name: "images",
@@ -35,10 +35,9 @@ export let productType = new GraphQLObjectType({
             })
         },
         colors: { type: new GraphQLList(GraphQLString) },
+        sizes: { type: new GraphQLList(GraphQLString) },
         stock: { type: GraphQLInt },
         price: { type: GraphQLInt },
-        productSeasonTypetName: { type: GraphQLString },
-        productType: { type: GraphQLString },
         category:{type: new GraphQLObjectType({
             name:"categoryDetails",
             fields:{
@@ -46,5 +45,6 @@ export let productType = new GraphQLObjectType({
             }
         })},
         isDeleted: { type: GraphQLBoolean },
+
     }
 })
