@@ -13,7 +13,7 @@ import { ApiFeature } from "../../../utils/ApiFeatures.js";
 export const getAllProduct = async (req, res, next) => {
     const mongooseQuery = new ApiFeature(productModel.find({}).populate('category'), req.query).paginate().filter().search().sort()
     const data = await mongooseQuery.mongooseQuery.populate('category');
-    return res.status(200).json({ message: "Done", data })
+    return res.status(200).json({ message: "Success", data })
 }
 
 
