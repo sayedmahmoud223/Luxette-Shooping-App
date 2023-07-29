@@ -8,7 +8,7 @@ export let getProducts = {
     resolve: async () => {
         let products = await productModel.find({ isDeleted: false }).populate([
             {
-                path:"categoryId",
+                path:"category",
                 select:"name "
             }
         ])

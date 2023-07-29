@@ -1,9 +1,6 @@
 import {
     GraphQLSchema,
     GraphQLObjectType,
-    GraphQLList,
-    GraphQLString,
-    GraphQLInt
 } from "graphql"
 import {getProducts} from "./graphQl.fields.js"
 

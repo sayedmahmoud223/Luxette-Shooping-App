@@ -39,7 +39,7 @@ export let productType = new GraphQLObjectType({
         price: { type: GraphQLInt },
         productSeasonTypetName: { type: GraphQLString },
         productType: { type: GraphQLString },
-        categoryId:{type: new GraphQLObjectType({
+        category:{type: new GraphQLObjectType({
             name:"categoryDetails",
             fields:{
                 name:{type: GraphQLString}
