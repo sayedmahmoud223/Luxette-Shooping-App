@@ -82,7 +82,7 @@ export let sessionUrl = async (req, res, next) => {
         metadata: { street, city, phone, cartId: req.params.id },
         discounts: req.body.copounId ? [{ coupon: req.body.copounId }] : []
     })
-    res.json({ session })
+    return res.status(200).json({message:"Success", data:session })
 }
 
 export let webhook = async (req, res) => {
@@ -112,8 +112,8 @@ export let webhook = async (req, res) => {
             status: "placed",
             address: {
                 street: data.metadata.street,
-                city:data.metadata.city,
-                phone:data.metadata.phone,
+                city: data.metadata.city,
+                phone: data.metadata.phone,
             },
             isPaid: true,
             paymentMethod: "Payment"

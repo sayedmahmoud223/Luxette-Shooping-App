@@ -11,17 +11,12 @@ import { ApiFeature } from "../../../utils/ApiFeatures.js";
 
 
 export const getAllProduct = async (req, res, next) => {
-
-    // const mongooseQuery = new ApiFeature(productModel.find({}), req.query).paginate().filter().search().select().sort()
-    // const products = await mongooseQuery.mongooseQuery
-    let products = await productModel.find()
-    // .populate([
-    //     {
-    //         path: "variants"
-    //     }
-    // ])
+    const mongooseQuery = new ApiFeature(productModel.find({}).populate('category'), req.query).paginate().filter().search().sort()
+    const products = await mongooseQuery.mongooseQuery.populate('category');
     return res.status(200).json({ message: "Done", products })
 }
+
+
 
 
 export let addProduct = async (req, res, next) => {
@@ -38,7 +33,7 @@ export let addProduct = async (req, res, next) => {
         }
     }
     let product = await productModel.create(req.body)
-    return res.status(201).json({ message: "Success", product })
+    return res.status(201).json({ message: "Success", data: product })
 }
 
 
@@ -57,10 +52,11 @@ export let addProductVariants = async (req, res, next) => {
             console.log("Hello Mr Zaloma");
         }
     }
+    console.log(req.body);
     let variant = await varinatModel.create(req.body)
     product.variants.push(variant._id);
     await product.save()
-    return res.status(200).json({ message: "Success", product })
+    return res.status(200).json({ message: "Success", data:product })
 }
 
 export let updateProductVariants = async (req, res, next) => {

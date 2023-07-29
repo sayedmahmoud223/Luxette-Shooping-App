@@ -1,5 +1,4 @@
 import mongoose, { Schema, Types, model } from "mongoose"
-import { variantSchema } from "./Variants.model.js"
 let productSchema = new Schema({
     ProductName: {
         type: String,
@@ -22,7 +21,7 @@ let productSchema = new Schema({
     },
     category: {
         type: Types.ObjectId,
-        ref:"Category",
+        ref: "Category",
         required: true
     },
     mainImage: { type: Object, required: true },
@@ -71,6 +70,7 @@ productSchema.virtual('stock').get(function () {
     return totalStock;
 });
 
+
 productSchema.virtual("colors").get(function () {
     let colors = []
     if (this.variants) {
@@ -82,6 +82,7 @@ productSchema.virtual("colors").get(function () {
     }
     return colors
 });
+
 
 productSchema.virtual("sizes").get(function () {
     let sizes = []
@@ -97,3 +98,31 @@ productSchema.virtual("sizes").get(function () {
 
 
 export let productModel = model("Product", productSchema) || mongoose.model.Product
+
+
+
+
+
+
+
+
+
+
+
+// // const variantSchema = new Schema({
+// //     color: { type: String, enum: ['Black', 'Gray', 'White', 'Brown', 'Beige', 'Red', 'Pink', 'Orange', 'Yellow', 'Ivory', 'Green', 'Blue', 'Purple', 'Gold', 'Silver', 'Multi'], required: true },
+// //     size: { type: String, enum: ['XXS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'], required: true },
+// //     image: String,
+// //     sku: String,
+// //     stock: { type: Number, required: true }
+// // });
+
+// // const variantsSchema = new Schema(
+// //                 {
+// //                     productId: { type: Types.ObjectId, ref: "Product", required: true },
+// //                     variants: [variantSchema]
+// //                 },
+// //                 {
+// //                     timestamps: true
+// //                 }
+// //             )

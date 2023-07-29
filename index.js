@@ -10,7 +10,7 @@ const app = express()
 // setup port and the baseUrl
 const port = process.env.PORT || 5000
 initApp(app, express)
-app.listen(process.env.PORT, () => console.log(`Example app listening on port ${port}!`))
+app.listen(process.env.PORT||5000, () => console.log(`Example app listening on port ${port}!`))
 
 
 

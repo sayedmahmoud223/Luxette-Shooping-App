@@ -3,33 +3,33 @@ import { ResError } from "../../../utils/errorHandling.js";
 
 
 export let getOffers = async (req, res, next) => {
-    let Offers = await offersModel.find()
-    return res.status(200).json({ message: "Success", Offers })
+    let data = await offersModel.find()
+    return res.status(200).json({ message: "Success", data })
 }
 
 export let addOffer = async (req, res, next) => {
     let { offer } = req.body;
-    let newOffer = await offersModel.create({
+    let data = await offersModel.create({
         offer
     })
-    return res.status(201).json({ message: "Success", newOffer })
+    return res.status(201).json({ message: "Success", data })
 }
 
 export let updateOffer = async (req, res, next) => {
     let { offer } = req.body;
     let { id } = req.params;
-    let newOffer = await offersModel.findOneAndUpdate({ _id: id }, { offer }, { new: true })
-    if (!newOffer) {
+    let data = await offersModel.findOneAndUpdate({ _id: id }, { offer }, { new: true })
+    if (!data) {
         return next(new ResError("not found to update", 404))
     }
-    return res.status(200).json({ message: "Success", newOffer })
+    return res.status(200).json({ message: "Success", data })
 }
 
 export let deleteOffer = async (req, res, next) => {
     let { id } = req.params;
-    let deletedOffer = await offersModel.findOneAndUpdate({ _id: id }, { isDeleted: true }, { new: true })
-    if (!deletedOffer) {
+    let data = await offersModel.findOneAndUpdate({ _id: id }, { isDeleted: true }, { new: true })
+    if (!data) {
         return next(new ResError("not found to update", 404))
     }
-    return res.status(200).json({ message: "Success", deletedOffer })
+    return res.status(200).json({ message: "Success", data })
 }
