@@ -24,6 +24,27 @@ export let productType = new GraphQLObjectType({
                 }
             }))
         },
+        variants: {
+            type: new GraphQLList(new GraphQLObjectType({
+                name: "variants",
+                description: "descripeProduct",
+                fields: {
+                    colorName: { type: GraphQLString },
+                    size: { type: GraphQLString },
+                    stock: { type: GraphQLInt },
+                    subImages: {
+                        type: new GraphQLList(new GraphQLObjectType({
+                            name: "VariantImages",
+                            description: "subImages",
+                            fields: {
+                                public_id: { type: GraphQLString },
+                                secure_url: { type: GraphQLString },
+                            }
+                        }))
+                    },
+                }
+            }))
+        },
         mainImage: {
             type: new GraphQLObjectType({
                 name: "image",

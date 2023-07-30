@@ -15,6 +15,9 @@ export let getProducts = {
             {
                 path:"category",
                 select:"name "
+            },
+            {
+                path:"variants",
             }
         ])
         return products
