@@ -19,9 +19,8 @@ router.get("/:id/variants", fileUpload(5).fields([
 )
 
 router.patch("/:id/variants/:variantId", fileUpload(5).fields([
-    { name: "mainImage", maxCount: 1 },
     { name: "subImages", maxCount: 5 },
-]),productController.updateProductVariants)
+]), asyncHandler(productController.updateProductVariants))
 
 
 // router.put("/:id", fileUpload(5).fields([

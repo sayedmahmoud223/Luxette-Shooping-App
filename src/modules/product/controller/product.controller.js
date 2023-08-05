@@ -73,15 +73,22 @@ export let updateProductVariants = async (req, res, next) => {
     }
 
     if (req.files?.subImages?.length) {
-        req.body.subImages = []
+        if (variant?.subImages?.length) {
+            console.log("hello3");
+            await cloudinary.uploader.destroy(variant?.subImages?.map(ele => ele?.public_id))
+        }
+        variant.subImages = []
+        console.log("hello1");
         for (const image of req.files.subImages) {
-            let { secure_url, public_id } = await cloudinary.uploader.upload(image.path, { folder: `luxxete/products/subImages/${product.customId}/${req.body.colorName}` })
-            await cloudinary.uploader.destroy(variant.subImages.map(ele => ele.public_id))
-            req.body.subImages.push({ secure_url, public_id })
+            let { secure_url, public_id } = await cloudinary.uploader.upload(image.path, { folder: `luxxete/products/subImages/${product.customId}` })
+            console.log("hello2");
+            console.log("hello4");
+            variant.subImages.push({ secure_url, public_id })
         }
     }
+    console.log("hello");
     await varinatModel.updateOne({ _id: variantId }, req.body)
-    await product.save()
+    await variant.save()
     return res.status(200).json({ message: "Success" })
 }
 

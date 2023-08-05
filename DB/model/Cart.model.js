@@ -13,7 +13,8 @@ const cartSchema = new Schema({
             allPrice:Number
         }
     ],
-    finalPrice: Number
+    finalPrice: Number,
+    allQuantity: { type: Number, default: 1 },
 }, {
     timestamps: true
 })

@@ -19,7 +19,7 @@ export const addProductToCart = async (req, res, next) => {
     let checkAvalabilty = product?.variants?.find((ele => {
         return (ele.colorName == color && ele.size == size && (ele.stock >= quantity || 1))
     }))
-    console.log({checkAvalabilty});
+    console.log({ checkAvalabilty: checkAvalabilty._id });
     if (!checkAvalabilty) {
         return next(new ResError("Product Not Avalible", 400))
     }
@@ -34,12 +34,14 @@ export const addProductToCart = async (req, res, next) => {
             cartItems: [
                 req.body
             ],
-            finalPrice: product.price
+            finalPrice: product.price,
+            allQuantity: 1
         })
         return res.status(201).json({ message: "Success", createCart })
     }
-    cart.cartItem = []
-    let cartItem = cart.cartItems.find((ele) => ele.productId == req.body.productId)
+    console.log(checkAvalabilty._id);
+    let cartItem = cart.cartItems.find((ele) => (ele.variantId.toString() == checkAvalabilty._id.toString()) && (ele.productId.toString() == req.body.productId.toString()))
+    console.log({cartItem});
     if (cartItem) {
         let checkQuantity = cartItem.quantity
         if (checkAvalabilty.stock > checkQuantity) {
@@ -55,7 +57,11 @@ export const addProductToCart = async (req, res, next) => {
     let finalPrice = cart?.cartItems?.reduce((accumulator, currentElement) => {
         return accumulator + currentElement.allPrice;
     }, 0);
+    let qty = cart?.cartItems?.reduce((accumulator, currentElement) => {
+        return accumulator + currentElement.quantity;
+    }, 0);
     cart.finalPrice = finalPrice
+    cart.allQuantity = qty
     await cart.save()
     return res.status(201).json({ message: "Success", cart })
 }
