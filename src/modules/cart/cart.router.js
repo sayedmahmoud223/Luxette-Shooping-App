@@ -6,7 +6,7 @@ import { asyncHandler } from "../../utils/errorHandling.js";
 const router = Router()
 
 
-router.get("/",asyncHandler(cartController.getCart))
+router.get("/", auth(cartRoles.isUser),asyncHandler(cartController.getCart))
 router.post("/",auth(cartRoles.isUser),asyncHandler(cartController.addProductToCart))
 router.patch("/:id",auth(cartRoles.isUser),asyncHandler(cartController.removeItem))
 router.patch("/:id/removeitems",auth(cartRoles.isUser),asyncHandler(cartController.deleteCart))

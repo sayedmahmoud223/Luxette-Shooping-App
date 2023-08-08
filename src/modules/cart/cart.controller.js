@@ -4,7 +4,9 @@ import { ResError } from "../../utils/errorHandling.js"
 
 // getCart
 export const getCart = async (req, res, next) => {
-    let Cart = await cartModel.findOne({})
+    let { _id } = req.user
+    console.log(_id );
+    let Cart = await cartModel.findOne({userId: _id }).populate("cartItems.productId")
     return res.status(201).json({ message: "Success", Cart })
 }
 
