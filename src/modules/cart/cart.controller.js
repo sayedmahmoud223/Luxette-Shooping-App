@@ -3,7 +3,7 @@ import { productModel } from "../../../DB/model/Product.model.js";
 import { ResError } from "../../utils/errorHandling.js"
 
 
-let returnPriceAndQty = (cart) =>{
+let returnPriceAndQty = (cart) => {
     let finalPrice = cart?.cartItems?.reduce((accumulator, currentElement) => {
         return accumulator + currentElement.allPrice;
     }, 0);
@@ -12,7 +12,7 @@ let returnPriceAndQty = (cart) =>{
     }, 0);
     cart.finalPrice = finalPrice
     cart.allQuantity = qty
-    
+
     return cart
 }
 
@@ -22,8 +22,8 @@ let returnPriceAndQty = (cart) =>{
 // getCart
 export const getCart = async (req, res, next) => {
     let { _id } = req.user
-    console.log(_id );
-    let Cart = await cartModel.findOne({userId: _id }).populate("cartItems.productId")
+    console.log(_id);
+    let Cart = await cartModel.findOne({ userId: _id }).populate("cartItems.productId")
     return res.status(201).json({ message: "Success", Cart })
 }
 
@@ -44,29 +44,30 @@ export const addProductToCart = async (req, res, next) => {
     }
     req.body.variantId = checkAvalabilty._id
     req.body.price = product.price
-    req.body.allPrice = product.price
+    req.body.allPrice = product.price * req.body.quantity
     let cart = await cartModel.findOne({ userId: _id })
     if (!cart) {
-        req.body.finalPrice = product.price
         let createCart = await cartModel.create({
             userId: _id,
             cartItems: [
                 req.body
             ],
-            finalPrice: product.price,
-            allQuantity: 1
+            finalPrice: product.price * req.body.quantity,
+            allQuantity: req.body.quantity
         })
         return res.status(201).json({ message: "Success", createCart })
     }
     console.log(checkAvalabilty._id);
     let cartItem = cart.cartItems.find((ele) => (ele.variantId.toString() == checkAvalabilty._id.toString()) && (ele.productId.toString() == req.body.productId.toString()))
-    console.log({cartItem});
+    console.log({ cartItem });
     if (cartItem) {
         let checkQuantity = cartItem.quantity
         if (checkAvalabilty.stock > checkQuantity) {
             cartItem.quantity += 1
             cartItem.price = product.price
             cartItem.allPrice = cartItem.quantity * product.price
+            cartItem.allQuantity = cartItem.quantity
+
         } else {
             return next(new ResError("quantity not avalible"))
         }
@@ -83,7 +84,7 @@ export const addProductToCart = async (req, res, next) => {
     // cart.allQuantity = qty
     await cart.save()
     const updatedCart = returnPriceAndQty(cart);
-    return res.status(201).json({ message: "Success", cart:updatedCart })
+    return res.status(201).json({ message: "Success", cart: updatedCart })
 }
 
 // ChangeQuantity
@@ -112,7 +113,7 @@ export const ChangeQuantity = async (req, res, next) => {
     }
     await cart.save()
     const updatedCart = returnPriceAndQty(cart);
-    return res.status(201).json({ message: "Success", cart:updatedCart })
+    return res.status(201).json({ message: "Success", cart: updatedCart })
 }
 
 // remove item
