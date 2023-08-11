@@ -44,7 +44,7 @@ export const addProductToCart = async (req, res, next) => {
     }
     req.body.variantId = checkAvalabilty._id
     req.body.price = product.price
-    req.body.allPrice = product.price * req.body.quantity
+    // req.body.allPrice = product.price * req.body.quantity
     let cart = await cartModel.findOne({ userId: _id })
     if (!cart) {
         let createCart = await cartModel.create({
@@ -66,8 +66,7 @@ export const addProductToCart = async (req, res, next) => {
             cartItem.quantity += 1
             cartItem.price = product.price
             cartItem.allPrice = cartItem.quantity * product.price
-            cartItem.allQuantity = cartItem.quantity
-
+            cart.allQuantity = cartItem.quantity
         } else {
             return next(new ResError("quantity not avalible"))
         }
@@ -82,22 +81,24 @@ export const addProductToCart = async (req, res, next) => {
     // }, 0);
     // cart.finalPrice = finalPrice
     // cart.allQuantity = qty
-    await cart.save()
     const updatedCart = returnPriceAndQty(cart);
-    return res.status(201).json({ message: "Success", cart: updatedCart })
+    await cart.save()
+    return res.status(201).json({ message: "Success", cart })
 }
 
 // ChangeQuantity
 export const ChangeQuantity = async (req, res, next) => {
-    let { quantity } = req.body
+    console.log("hello");
+    let { quantity,cartId } = req.body
     let product = await productModel.findOne({ _id: req.body.productId })
     if (!product) {
         return next(new ResError("Product Not Found", 404))
     }
-    let cart = await cartModel.findOne({ _id: req.params.id })
+    let cart = await cartModel.findOne({ _id: cartId })
     if (!cart) {
         return next(new ResError("cart Not Found", 404))
     }
+    console.log("hello");
     let cartItem = cart.cartItems.find((ele) => (ele.productId == req.body.productId) && (ele.variantId == req.body.variantId))
     // console.log({cartItem});
     let checkAvalabilty = product?.variants?.find((ele => {
