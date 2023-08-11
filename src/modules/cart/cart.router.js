@@ -11,6 +11,7 @@ router.post("/",auth(cartRoles.isUser),asyncHandler(cartController.addProductToC
 // router.patch("/:id",auth(cartRoles.isUser),asyncHandler(cartController.removeItem))
 // router.patch("/:id/removeitems",auth(cartRoles.isUser),asyncHandler(cartController.deleteCart))
 router.patch("/ChangeQty",auth(cartRoles.isUser),asyncHandler(cartController.ChangeQuantity))
+router.patch("/cartDiscount",auth(cartRoles.isUser),asyncHandler(cartController.discountOnCartTotalPrice))
 
 
 

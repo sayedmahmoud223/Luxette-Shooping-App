@@ -1,5 +1,6 @@
 import { cartModel } from "../../../DB/model/Cart.model.js"
 import { productModel } from "../../../DB/model/Product.model.js";
+import { copounModel } from "../../../DB/model/copoun.model.js";
 import { ResError } from "../../utils/errorHandling.js"
 
 
@@ -89,7 +90,7 @@ export const addProductToCart = async (req, res, next) => {
 // ChangeQuantity
 export const ChangeQuantity = async (req, res, next) => {
     console.log("hello");
-    let { quantity,cartId } = req.body
+    let { quantity, cartId } = req.body
     let product = await productModel.findOne({ _id: req.body.productId })
     if (!product) {
         return next(new ResError("Product Not Found", 404))
@@ -146,4 +147,22 @@ export const deleteCart = async (req, res, next) => {
     }
     return res.status(201).json({ message: "Success", cart })
 }
+
+//discount 
+export const discountOnCartTotalPrice = async (req, res, next) => {
+    let cart = await cartModel.findOne({ _id: req.body.cartId })
+    if (!cart) {
+        return next(new ResError("Cart Not Found", 404))
+    }
+    let copoun = await copounModel.findOne({ copounName: req.body.copounName, isDeleted: false, usedBy: { $nin: [req.user._id] } })
+    if (!copoun) {
+        return next(new ResError("Copoun Not Avalible", 404))
+    }
+    cart.finalPriceWithDiscount = cart.finalPrice - ((copoun.copounAmount / 100) * cart.finalPrice)
+    copoun.usedBy.push(req.user._id)
+    await cart.save()
+    await copoun.save()
+    return res.status(201).json({ message: "Success", finalPrice: cart.finalPriceWithDiscount })
+}
+
 
