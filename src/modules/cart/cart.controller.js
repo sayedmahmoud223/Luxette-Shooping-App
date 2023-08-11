@@ -81,7 +81,7 @@ export const addProductToCart = async (req, res, next) => {
     // }, 0);
     // cart.finalPrice = finalPrice
     // cart.allQuantity = qty
-    const updatedCart = returnPriceAndQty(cart);
+    returnPriceAndQty(cart);
     await cart.save()
     return res.status(201).json({ message: "Success", cart })
 }
@@ -112,9 +112,17 @@ export const ChangeQuantity = async (req, res, next) => {
         cartItem.price = product.price
         cartItem.allPrice = cartItem.quantity * cartItem.price
     }
+    // returnPriceAndQty(cart);
+    let finalPrice = cart?.cartItems?.reduce((accumulator, currentElement) => {
+        return accumulator + currentElement.allPrice;
+    }, 0);
+    let qty = cart?.cartItems?.reduce((accumulator, currentElement) => {
+        return accumulator + currentElement.quantity;
+    }, 0);
+    cart.finalPrice = finalPrice
+    cart.allQuantity = qty
     await cart.save()
-    const updatedCart = returnPriceAndQty(cart);
-    return res.status(201).json({ message: "Success", cart: updatedCart })
+    return res.status(200).json({ message: "Success", cart })
 }
 
 // remove item
